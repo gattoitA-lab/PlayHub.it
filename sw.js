@@ -50,7 +50,12 @@ self.addEventListener("push", (event) => {
         type: "window",
         includeUncontrolled: true,
       });
-      if (windows.some((client) => client.visibilityState === "visible")) return;
+      if (
+        windows.some(
+          (client) => client.visibilityState === "visible" && client.focused,
+        )
+      )
+        return;
       await self.registration.showNotification(title, options);
     })(),
   );
