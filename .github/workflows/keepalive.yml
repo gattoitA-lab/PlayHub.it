@@ -1,0 +1,14 @@
+name: Tieni sveglio PlayHub
+
+on:
+  schedule:
+    # Ogni 10 minuti: Render spegne il servizio free dopo 15 di inattività.
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sveglia il backend
+        run: curl -fsS -m 90 https://playhub-y3m2.onrender.com/api/ -o /dev/null
