@@ -412,11 +412,20 @@ Caused by: `,Jc=Symbol("causeStack");function Z1(n,r){const i=k.hasOwnProp(n,Jc)
 
     <script>
       (function () {
+        var ua = navigator.userAgent || "";
+        var ios = /iPhone|iPad|iPod/.test(ua);
+        var iosVersion = ua.match(/OS (\d+)[_.](\d+)/);
+        var iosTooOld =
+          ios &&
+          iosVersion &&
+          (Number(iosVersion[1]) < 14 ||
+            (Number(iosVersion[1]) === 14 && Number(iosVersion[2]) < 5));
         var modern =
           "noModule" in HTMLScriptElement.prototype &&
           !!window.fetch &&
           !!window.WebSocket &&
-          !!window.RTCPeerConnection;
+          !!window.RTCPeerConnection &&
+          !iosTooOld;
         if (!modern) {
           var box = document.getElementById("old-browser");
           if (box) box.setAttribute("data-visible", "true");
