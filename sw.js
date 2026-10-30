@@ -42,7 +42,18 @@ self.addEventListener("push", (event) => {
     actions: kind === "call" ? [{ action: "open", title: "Apri" }] : [],
   };
 
-  event.waitUntil(self.registration.showNotification(title, options));
+  event.waitUntil(
+    (async () => {
+      // Se una finestra di PlayHub è visibile, l'avviso e il suono li gestisce
+      // la pagina: evita la doppia notifica (e il doppio suono) sul computer.
+      const windows = await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+      if (windows.some((client) => client.visibilityState === "visible")) return;
+      await self.registration.showNotification(title, options);
+    })(),
+  );
 });
 
 self.addEventListener("notificationclick", (event) => {
