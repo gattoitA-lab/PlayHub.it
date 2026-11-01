@@ -44,19 +44,35 @@ self.addEventListener("push", (event) => {
 
   event.waitUntil(
     (async () => {
+      // La notifica di prova deve arrivare sempre, anche con l'app aperta:
+      // serve proprio a verificare che il dispositivo la riceva.
+      const windows =
+        kind === "test"
+          ? []
+          : await self.clients.matchAll({
+              type: "window",
+              includeUncontrolled: true,
+            });
       // Se una finestra di PlayHub è visibile, l'avviso e il suono li gestisce
       // la pagina: evita la doppia notifica (e il doppio suono) sul computer.
-      const windows = await self.clients.matchAll({
-        type: "window",
-        includeUncontrolled: true,
-      });
       if (
         windows.some(
           (client) => client.visibilityState === "visible" && client.focused,
         )
       )
         return;
-      await self.registration.showNotification(title, options);
+      try {
+        await self.registration.showNotification(title, options);
+      } catch (error) {
+        // Safari/iOS è più severo sulle opzioni: se una non è supportata
+        // riprova con il minimo indispensabile, invece di perdere l'avviso.
+        await self.registration.showNotification(title, {
+          body: options.body,
+          icon: options.icon,
+          tag: options.tag,
+          data: options.data,
+        });
+      }
     })(),
   );
 });
