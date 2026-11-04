@@ -41,5 +41,14 @@
       "short_name": "Giochi",
       "url": "./"
     }
-  ]
+  ],
+  "share_target": {
+    "action": "index.html",
+    "method": "GET",
+    "params": {
+      "title": "share_title",
+      "text": "share_text",
+      "url": "share_url"
+    }
+  }
 }
