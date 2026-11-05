@@ -8,6 +8,16 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(self.clients.claim());
 });
 
+// Un handler fetch è richiesto dai browser per mantenere la PWA installabile
+// e registrare il Web Share Target. Le richieste same-origin restano online:
+// non aggiungiamo una cache che potrebbe servire una versione vecchia dell'app.
+self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
+  const url = new URL(event.request.url);
+  if (!url.protocol.startsWith("http") || url.origin !== self.location.origin) return;
+  event.respondWith(fetch(event.request));
+});
+
 // Le risorse vanno risolte rispetto alla cartella del service worker: così
 // funzionano sia su Render (radice) sia su GitHub Pages (/PlayHub.it/).
 const scopeAsset = (value, fallback) => {
